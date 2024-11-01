@@ -1,17 +1,19 @@
 wave_length: 5
 amplitude: 1
 slit_width: 50
-medium_clearness: 1
+medium_clearness: 1 # from 0 (not transparent) to 1 (transparent)
 
-x_range:
+amplitude_plot_dpi: 600
+
+x_range: # the range of x axis for the plot
     from: -1600
     to: 1600
 
-y_range:
+y_range: # the range of y axis for the plot
     from: 0
-    to: 800
+    to: 1600
 
-slit_positions:
+slit_positions: # a list contains all the centre of the slits
     - x: -50
       y: 0
 

@@ -1,6 +1,8 @@
 library(ggplot2)
 library(viridis)
 library(yaml)
+library(pbapply)  # for progress bars
+
 
 wave_amplitude <- function(x, a, l, fd) a * sin(x * pi / l + fd)
 get_distance <- function(o, x, y) sqrt((o$x - x)^2 + (o$y - y)^2)
@@ -32,26 +34,34 @@ for (s in slit_positions) {
   }
 }
 
+
+print("Rendering plot...")
 x <- seq(x_range$from, x_range$to, length.out = 1601)
 y <- seq(y_range$from, y_range$to, length.out = 801)
 grid <- expand.grid(x = x, y = y)
 
-grid$a <- rowSums(sapply(waves, function(w) {
+
+# Add progress bar for calculating grid$a
+grid$a <- rowSums(pbsapply(waves, function(w) {
   distance <- get_distance(w$origin, grid$x, grid$y)
   loss <- medium_clearness**distance
   return(wave_amplitude(distance, w$amplitude, w$wave_length, w$fd) * loss)
-}))
+}, simplify = TRUE))
 
-plot <- ggplot(grid, aes(x = x, y = y, fill = a)) +
-  geom_tile() +
+print("Plotting the wave amplitude visualization...")
+plot <- ggplot(grid, aes(x = x, y = y, fill = a), dpi = config$amplitude_plot_dpi) +
+  geom_raster() + 
   scale_fill_viridis(name = "Displacement", option = "H") +
   labs(title = "Wave Amplitude Visualization", x = "X", y = "Y") +
   theme_minimal() +
   theme(plot.background = element_rect(fill = "white")) +
   coord_equal(ratio = 1)
 
-ggsave("wave_amplitude.png", plot, dpi = 600)
+plot$render <- FALSE
 
+ggsave("wave_amplitude.png", plot, dpi = config$amplitude_plot_dpi)
+
+print("Plotting the light intensity at the top row...")
 intensity_top <- subset(grid, y == 400)
 
 intensity_plot <- ggplot(intensity_top, aes(x = x, y = a * a)) +
@@ -65,4 +75,5 @@ intensity_plot <- ggplot(intensity_top, aes(x = x, y = a * a)) +
     panel.grid.minor = element_line(color = "grey90")
   )
 
-ggsave("light_intensity_top_row.png", intensity_plot, dpi = 600)
+intensity_plot$render <- FALSE
+ggsave("light_intensity_top_row.png", intensity_plot, dpi = 300)
