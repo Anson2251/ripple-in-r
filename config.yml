@@ -1,0 +1,19 @@
+wave_length: 5
+amplitude: 1
+slit_width: 50
+medium_clearness: 1
+
+x_range:
+    from: -1600
+    to: 1600
+
+y_range:
+    from: 0
+    to: 800
+
+slit_positions:
+    - x: -50
+      y: 0
+
+    - x: 50
+      y: 0

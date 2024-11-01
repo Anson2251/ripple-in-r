@@ -10,20 +10,16 @@ pushList <- function(list, element) {
   return(list)
 }
 
+config <- yaml.load_file("config.yml")
+wave_length <- config$wave_length
+amplitude <- config$amplitude
+slit_width <- config$slit_width
+medium_clearness <- config$medium_clearness
+slit_positions <- config$slit_positions
+x_range <- config$x_range
+y_range <- config$y_range
+
 waves <- list()
-wave_length <- 5
-amplitude <- 1
-slit_width <- 50
-
-x_range <- c(-1600, 1600)
-y_range <- c(0, 800)
-medium_clearness <- 1
-
-slit_positions <- list(
-  list(x = -50, y = 0),
-  list(x = 50, y = 0)
-)
-
 for (s in slit_positions) {
   start_pos <- s$x - (slit_width / 2)
   for (i in 1:slit_width) {
@@ -36,8 +32,8 @@ for (s in slit_positions) {
   }
 }
 
-x <- seq(x_range[1], x_range[2], length.out = 1601)
-y <- seq(y_range[1], y_range[2], length.out = 801)
+x <- seq(x_range$from, x_range$to, length.out = 1601)
+y <- seq(y_range$from, y_range$to, length.out = 801)
 grid <- expand.grid(x = x, y = y)
 
 grid$a <- rowSums(sapply(waves, function(w) {
@@ -58,7 +54,7 @@ ggsave("wave_amplitude.png", plot, dpi = 600)
 
 intensity_top <- subset(grid, y == 400)
 
-intensity_plot <- ggplot(intensity_top, aes(x = x, y = a*a)) +
+intensity_plot <- ggplot(intensity_top, aes(x = x, y = a * a)) +
   geom_line(color = "blue") +
   labs(title = "Light Intensity", x = "X", y = "Intensity") +
   theme_minimal() +
