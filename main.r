@@ -3,7 +3,6 @@ library(viridis)
 library(yaml)
 library(pbapply)  # for progress bars
 
-
 wave_amplitude <- function(x, a, l, fd) a * sin(x * pi / l + fd)
 get_distance <- function(o, x, y) sqrt((o$x - x)^2 + (o$y - y)^2)
 
@@ -34,10 +33,9 @@ for (s in slit_positions) {
   }
 }
 
-
 print("Rendering plot...")
-x <- seq(x_range$from, x_range$to, length.out = 1601)
-y <- seq(y_range$from, y_range$to, length.out = 801)
+x <- seq(x_range$from, x_range$to, 1)
+y <- seq(y_range$from, y_range$to, 1)
 grid <- expand.grid(x = x, y = y)
 
 
@@ -70,9 +68,7 @@ intensity_plot <- ggplot(intensity_top, aes(x = x, y = a * a)) +
   theme_minimal() +
   theme(
     plot.background = element_rect(fill = "white"),
-    panel.background = element_rect(fill = "white"),
-    panel.grid.major = element_line(color = "grey80"),
-    panel.grid.minor = element_line(color = "grey90")
+    panel.background = element_rect(fill = "white")
   )
 
 intensity_plot$render <- FALSE
